@@ -16,10 +16,5 @@
         "title": "Cerveza Porter",
         "price": 400,
         "thumbnail": "../desafio2/assets/img"
-    },
-    {
-        "id": 4,
-        "title": "Scottish",
-        "price": 300
     }
 ]
