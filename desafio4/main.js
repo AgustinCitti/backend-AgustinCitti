@@ -6,6 +6,9 @@ const port = 8080;
 
 const rutaProductos = Router();
 
+aplicacion.use('/static', express.static(__dirname + '/public'));
+
+
 class Contenedor{
     constructor(productos){
         this.productos = productos;
@@ -67,7 +70,13 @@ console.log(productos.getAll());
 rutaProductos.get('/:id', async (peticion, respuesta) => {
 const id = parseInt(peticion.params.id);
 const producto = productos.getById(id);
-respuesta.json(producto);
+if (producto){
+    respuesta.json(producto);
+} else{
+    respuesta.status(404);
+    respuesta.json({error: 'producto no encontrado'});
+}
+
 });
 
 aplicacion.use('/productos', rutaProductos);
