@@ -6,6 +6,9 @@ const port = 8080;
 
 const rutaProductos = Router();
 
+aplicacion.use(express.json());
+aplicacion.use(express.urlencoded({ extended: true}));
+
 aplicacion.use('/static', express.static(__dirname + '/public'));
 
 
@@ -13,18 +16,23 @@ class Contenedor{
     constructor(productos){
         this.productos = productos;
     }
-     save(objeto){
+    save(objeto) {
+
+        if (objeto.id) {
+          this.productos.push(objeto);
+          return objeto.id;
+        }
+    
         let id = 1;
-        this.productos.forEach((element, index )=>{
-            if(element.id >= id){
-                id = element.id + 1;
-            }
+        this.productos.forEach((element, index) => {
+          if (element.id >= id) {
+            id = element.id + 1;
+          }
         });
         objeto.id = id;
         this.productos.push(objeto);
         return id;
-
-    }
+      }
      getById(id){
         let objetoSeleccionado = null;
         this.productos.forEach(element => {
@@ -34,6 +42,14 @@ class Contenedor{
         });
         return objetoSeleccionado;
     }
+    update(producto) {
+        this.productos = this.productos.map((element) => {
+          if (element.id == producto.id) {
+            return producto;
+          }
+          return element;
+        });
+      }
 
      getAll(){
         return this.productos;
@@ -62,7 +78,12 @@ productos.save({
     title: 'Kolsch',
     price:  '400',
     thumnail:'image'
-})
+});
+productos.save({
+    title: 'Ipa',
+    price: '500',
+    thumbnail: 'image'
+  });
 
 console.log(productos.getAll());
 //Endpoints 
@@ -79,7 +100,38 @@ if (producto){
 
 });
 
-aplicacion.use('/productos', rutaProductos);
+
+
+rutaProductos.get('/', (peticion, respuesta) => {
+    const listaProductos = productos.getAll();
+    respuesta.json(listaProductos);
+  });
+
+
+
+    rutaProductos.post('/', (peticion, respuesta) => {
+    });
+
+
+
+        rutaProductos.put('/:id', (peticion, respuesta) => {
+            const producto = peticion.body;
+            const id = peticion.params.id;
+          
+            productos.update({id , ...producto});
+            respuesta.json({
+              status: "ok"
+            });
+          });
+
+
+
+
+
+            rutaProductos.delete('/:id', (peticion, respuesta) => {
+            });
+
+aplicacion.use('/api/productos', rutaProductos);
 
 
 const servidor = aplicacion.listen(port,() =>{
