@@ -1,0 +1,12 @@
+[
+  {
+    "nombre": "Kolsch",
+    "descripcion": "Cerveza rubia",
+    "timestamp": 1668647566189,
+    "codigo": "1234567890",
+    "precio":200.45,
+    "stock": 24,
+    "foto": "../assets/img",
+    "id": 1
+  }
+]
