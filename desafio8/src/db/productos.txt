@@ -1,0 +1,20 @@
+[                                                                                                                                                     
+  {                                                                                                        
+    "title": "Kolsch",                                                                                                                                 
+    "price": 299.99,                                                                                                                                     
+    "thumbnail": "../../assets/img",                                     
+    "id": 1                                                                                                                                              
+  },                                                                                                                                                   
+  {                                                                                                                                                    
+    "title": "Honey",                                                                                                                              
+    "price": 349.99,                                                                                                                                     
+    "thumbnail": "../../assets/img",                                          
+    "id": 2                                                                                                                                              
+  },                                                                                                                                                   
+  {                                                                                                                                                    
+    "title": "Ipa",                                                                                                                          
+    "price": 399.99,                                                                                                                                     
+    "thumbnail": "../../assets/img",                                   
+    "id": 3                                                                                                                                              
+  }                                                                                                                                                    
+]
