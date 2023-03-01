@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador de Productos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="justify-content-center d-flex row w-100">
+        <div class="w-50 d-flex justify-content-center">
+            <img src=<%=perfil %>
+            class="rounded w-25 m-2 border border-3" alt="foto de perfil">
+        </div>
+
+        <h1 class="m-2 text-center col-12">BIENVENIDO <%= usuario %>
+        </h1>
+    </div>
+    <div class="d-flex justify-content-between row mx-4">
+        <a class="btn btn-success w-auto" href="/carrito">IR AL CARRITO</a>
+        <a class="btn btn-danger w-auto" href="/logout">LOGOUT</a>
+    </div>
+    <hr>
+    <div class="d-flex row m-3">
+        <div class="col-6 border-end">
+            <h2 class="my-3 text-center">Administrador de Productos</h2>
+            <div>
+                <form onsubmit="return addProducto(this)">
+                    <div class="mb-1">
+                        <label for="title" class="form-label"> Title </label>
+                        <input type="text" class="form-control" id="title" name="title" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="price" class="form-label"> Price </label>
+                        <input type="text" class="form-control" id="price" name="price" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="thumbnail" class="form-label"> Thumbnail</label>
+                        <input type="text" class="form-control" id="thumbnail" name="thumbnail" required="required">
+                    </div>
+                    <button type="submit" class="btn btn-primary my-3"> Enviar </button>
+                </form>
+            </div>
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th> Title </th>
+                        <th> Price </th>
+                        <th> Thumbnail </th>
+                        <th> </th>
+                    </tr>
+                <tbody id="productos">
+                </tbody>
+                </thead>
+            </table>
+        </div>
+        <div class="col-6">
+            <h2 class="my-3 text-center">Chat de Usuarios</h2>
+            <h3 class="my-3 text-center" id="compresion"></h3>
+            <div>
+                <form onsubmit="return addMensaje(this)">
+                    <div class="mb-1">
+                        <label for="email" class="form-label"> Email </label>
+                        <input type="email" class="form-control" id="email" name="email" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="nombre" class="form-label"> Nombre </label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="apellido" class="form-label"> Apellido </label>
+                        <input type="text" class="form-control" id="apellido" name="apellido" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="edad" class="form-label"> Edad </label>
+                        <input type="text" class="form-control" id="edad" name="edad" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="alias" class="form-label"> Alias </label>
+                        <input type="text" class="form-control" id="alias" name="alias" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="avatar" class="form-label"> Avatar </label>
+                        <input type="text" class="form-control" id="avatar" name="avatar" required="required">
+                    </div>
+                    <div class="mb-1">
+                        <label for="mensaje" class="form-label"> Mensaje </label>
+                        <input type="text" class="form-control" id="mensaje" name="mensaje" required="required">
+                    </div>
+                    <button type="submit" class="btn btn-primary my-3"> Enviar </button>
+                </form>
+            </div>
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th> Email </th>
+                        <th> Nombre </th>
+                        <th> Apellido </th>
+                        <th> Edad </th>
+                        <th> Alias </th>
+                        <th> Avatar </th>
+                        <th> Mensaje </th>
+                    </tr>
+                <tbody id="mensajes">
+                </tbody>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        const renderProducto = (producto) => {
+            const tableProductos = document.querySelector("#productos");
+            const rowProducto = document.createElement("tr");
+
+            const title = document.createElement("td");
+            title.innerHTML = producto.title;
+            rowProducto.appendChild(title);
+
+            const price = document.createElement("td");
+            price.innerHTML = producto.price;
+            rowProducto.appendChild(price);
+
+            const img = document.createElement("img");
+            const img_td = document.createElement("td");
+            img.src = producto.thumbnail;
+            img.alt = producto.title;
+            img.height = "80";
+            rowProducto.appendChild(img_td);
+            img_td.appendChild(img);
+
+            const comprarTd = document.createElement("td");
+            comprarTd.classList.add("align-middle");
+            rowProducto.appendChild(comprarTd);
+
+            const comprarButton = document.createElement("button");
+            comprarButton.innerText = "COMPRAR";
+            comprarButton.classList.add("btn", "btn-success", "margin-auto");
+            comprarButton.addEventListener("click", comprarProducto);
+            comprarTd.appendChild(comprarButton);
+
+            tableProductos.appendChild(rowProducto);
+
+        }
+
+        //Esquemas mensajes
+        const autorSchema = new normalizr.schema.Entity('autor', {}, { idAttribute: 'email' });
+
+        const mensajeSchema = new normalizr.schema.Entity('post', {
+            autor: autorSchema
+        }, { idAttribute: 'id' });
+
+        const mensajesSchema = new normalizr.schema.Entity('posts', {
+            mensajes: [mensajeSchema]
+        }, { idAttribute: 'id' });
+
+        const renderMensaje = (data) => {
+            const tableMensajes = document.querySelector("#mensajes");
+            const rowMensaje = document.createElement("tr");
+
+            const email = document.createElement("td");
+            email.innerHTML = data.email;
+            rowMensaje.appendChild(email);
+
+            const nombre = document.createElement("td");
+            nombre.innerHTML = data.nombre;
+            rowMensaje.appendChild(nombre);
+
+            const apellido = document.createElement("td");
+            apellido.innerHTML = data.apellido;
+            rowMensaje.appendChild(apellido);
+
+            const edad = document.createElement("td");
+            edad.innerHTML = data.edad;
+            rowMensaje.appendChild(edad);
+
+            const alias = document.createElement("td");
+            alias.innerHTML = data.alias;
+            rowMensaje.appendChild(alias);
+
+            const avatar = document.createElement("td");
+            avatar.innerHTML = data.avatar;
+            rowMensaje.appendChild(avatar);
+
+            const mensaje = document.createElement("td");
+            mensaje.innerHTML = data.mensaje;
+            rowMensaje.appendChild(mensaje);
+
+            tableMensajes.appendChild(rowMensaje);
+
+        }
+
+        const addProducto = () => {
+            const title = document.querySelector("#title").value;
+            const price = document.querySelector("#price").value;
+            const thumbnail = document.querySelector("#thumbnail").value;
+
+            socket.emit("addProducto", {
+                title,
+                price,
+                thumbnail,
+            })
+
+            return false;
+        }
+
+        const addMensaje = () => {
+            const mensaje = document.querySelector("#mensaje").value;
+            const email = document.querySelector("#email").value;
+            const nombre = document.querySelector("#nombre").value;
+            const apellido = document.querySelector("#apellido").value;
+            const edad = document.querySelector("#edad").value;
+            const alias = document.querySelector("#alias").value;
+            const avatar = document.querySelector("#avatar").value;
+
+            socket.emit("addMensaje", {
+                mensaje,
+                email,
+                nombre,
+                apellido,
+                alias,
+                avatar,
+                edad
+            })
+
+            return false;
+        }
+
+        const comprarProducto = (event) => {
+            const title = event.target.parentElement.parentElement.firstChild.innerText;
+            const price = event.target.parentElement.parentElement.children[1].innerText;
+
+            fetch("/home", {
+                method: "POST",
+                body: JSON.stringify({
+                    title,
+                    price
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+        }
+
+        socket.on("nuevo_cliente_productos", (productos) => {
+            productos.forEach(producto => {
+                renderProducto(producto);
+            })
+        });
+
+        socket.on("nuevo_cliente_chat", (chat) => {
+            /*Quito de forma temporal la información 
+            sobre la compresión de mensajes*/
+            /*const tamanioNormalizado = JSON.stringify(chat).length;         
+            const tamanioDesnormalizado = JSON.stringify(mensajesDesnormalizados).length;
+            let porcentaje = parseInt((1 - tamanioNormalizado / tamanioDesnormalizado) * 100);
+            porcentaje = porcentaje || 0;
+            document.getElementById("compresion").innerText = "Comprensión: " + porcentaje + "%";*/
+            const mensajesDesnormalizados = normalizr.denormalize(chat.result, mensajesSchema, chat.entities);
+            mensajesDesnormalizados.mensajes.forEach(mensaje => {
+                renderMensaje(mensaje);
+            })
+        });
+
+        socket.on("newProducto", producto => {
+            renderProducto(producto);
+        });
+
+        socket.on("newMensaje", mensaje => {
+            renderMensaje(mensaje);
+        });
+    </script>
+
+</body>
+
+</html>

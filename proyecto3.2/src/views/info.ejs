@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <h1 class="my-3 text-center">INFO</h1>
+    <hr>
+    <table class="table container w-50">
+        <tbody>
+          <tr>
+            <th>Argumentos:</th>
+            <td> PUERTO <%= args.puerto %> </td>
+          </tr>
+          <tr>
+            <th>Plataforma:</th>
+            <td><%= so %></td>
+          </tr>
+          <tr>
+            <th>Versión de Node:</th>
+            <td> <%= version %> </td>
+          </tr>
+          <tr>
+            <th>Path:</th>
+            <td> <%= execPath %> </td>
+          </tr>
+          <tr>
+            <th>PID:</th>
+            <td> <%= pid %> </td>
+          </tr>
+          <tr>
+            <th>Source del proyecto:</th>
+            <td> <%= src %> </td>
+          </tr>
+          <tr>
+            <th>CPUs:</th>
+            <td> <%= cpus %> </td>
+          </tr>
+        </tbody>
+      </table>
+</body>
+
+</html>
